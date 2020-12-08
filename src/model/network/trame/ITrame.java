@@ -1,14 +1,16 @@
-package model.network;
+package model.network.trame;
+
+import model.network.entete.IEntete;
 
 import java.util.List;
 
-public interface Trame {
+public interface ITrame {
     int getNo();
-    double getTime();
+    double getTemps();
     String getSource();
     String getDestination();
     String getProtocoleAbreviation();
     String getInfo();
-    List<Entete> getEntetes();
+    List<IEntete> getEntetes();
     String getHexa();
 }

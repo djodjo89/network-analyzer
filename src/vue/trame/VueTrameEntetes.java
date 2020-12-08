@@ -1,10 +1,10 @@
 package vue.trame;
 
-import model.network.Trame;
+import model.network.trame.ITrame;
 
 public class VueTrameEntetes implements VueTrame {
     @Override
-    public Trame getTrame() {
+    public ITrame getTrame() {
         return null;
     }
 }

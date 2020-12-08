@@ -3,7 +3,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.network.Trame;
+import model.network.trame.ITrame;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        List<Trame> trames;
+        List<ITrame> trames;
         // Recuperer les donnees du fichier et les convertir sous forme de trames
         stage.setTitle("Network analyzer");
         stage.setResizable(false);

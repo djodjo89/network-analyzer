@@ -1,7 +1,7 @@
 package vue.trame;
 
-import model.network.Trame;
+import model.network.trame.ITrame;
 
 public interface VueTrame {
-    Trame getTrame();
+    ITrame getTrame();
 }

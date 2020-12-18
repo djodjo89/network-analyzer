@@ -2,6 +2,7 @@ package model.network.champ;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ListeChamps extends AbstractChamp<List<IChamp>> {
     private String etiquette;
@@ -33,4 +34,25 @@ public class ListeChamps extends AbstractChamp<List<IChamp>> {
                 .reduce(Integer::max)
                 .orElse(0);
     }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ListeChamps that = (ListeChamps) o;
+    boolean sousChampsEqual = true;
+    int i = 0;
+
+    while (sousChampsEqual && i < sousChamps.size()) {
+      sousChampsEqual = sousChamps.get(i).equals(((ListeChamps) o).sousChamps);
+      i++;
+    }
+
+    return getEtiquette().equals(that.getEtiquette()) && sousChampsEqual;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getEtiquette(), sousChamps);
+  }
 }

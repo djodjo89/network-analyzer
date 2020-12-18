@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class FichierExtracteurTest {
@@ -115,6 +116,6 @@ public class FichierExtracteurTest {
 
         List<ITrame> actual = fichierExtracteur.extraireTrames("test/file/data/trames.txt");
 
-        assertEquals(expected, actual);
+        assertArrayEquals(expected.toArray(), actual.toArray());
     }
 }

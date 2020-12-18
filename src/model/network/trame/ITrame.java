@@ -13,4 +13,5 @@ public interface ITrame {
     String getInfo();
     List<IEntete> getEntetes();
     String getHexa();
+    boolean equals(Object o);
 }

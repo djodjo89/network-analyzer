@@ -7,4 +7,5 @@ public interface IChamp<T> {
     int getHauteur();
     boolean isRoot();
     void setNotRoot();
+    boolean equals(Object o);
 }

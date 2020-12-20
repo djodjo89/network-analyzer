@@ -43,8 +43,19 @@ public class FichierExtracteurTest {
         Champ protocole = new Champ("Protocole", 1);
         Champ headerChecksum = new Champ("Header checksum", "0xb97f");
         Champ ipSource = new Champ("Source", "132.227.61.5");
-        Champ ipDestination = new Champ("Source", "192.33.159.6");
-        ListeChamps options = new ListeChamps("Options");
+        Champ ipDestination = new Champ("Destination", "192.33.159.6");
+
+        IChamp options = new Champ<>("Options", Arrays.asList(
+                new Champ<>("Record Route", Arrays.asList(
+                        new Champ<>("Type", 999),
+                        new Champ<>("Length", 39),
+                        new Champ<>("Pointer", 4)
+                )),
+                new Champ<>("End of Options List", Arrays.asList(
+                        new Champ<>("Type", 0)
+                ))
+        ));
+        /*ListeChamps options = new ListeChamps("Options");
         ListeChamps recordRoute = new ListeChamps("Record Route");
         Champ recordRouteType = new Champ("Type", 7);
         Champ length = new Champ("Length", 39);
@@ -56,7 +67,7 @@ public class FichierExtracteurTest {
         Champ endOfOptionListType = new Champ("Type", 0);
         endOfOptionsList.addChamp(endOfOptionListType);
         options.addChamp(recordRoute);
-        options.addChamp(endOfOptionsList);
+        options.addChamp(endOfOptionsList);*/
 
         List<IChamp> ipv4Champs = Arrays.asList(
                 differentiatedServicesField,
@@ -109,12 +120,15 @@ public class FichierExtracteurTest {
                 "ICMP",
                 "Echo (ping) request  id=0x2f00, seq=0/0, ttl=255 (no response found!)",
                 entetes,
-                "08 00 20 0a ac 96 08 00 20 0a 70 66 08 00 4f 00 00 7c cb c9 00 00 ff 01 b9 7f 84 e3 3d 05 c0 21 9f 06 07 27 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 08 00 a2 56 2f 00 00 00 29 36 8c 41 00 03 86 2b 08 09 0a 0b 0c 0d 0e 0f 10 11 12 13 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23 24 25 26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33 34 35 36 37"
+                "08 00 20 0a ac 96 08 00 20 0a 70 66 08 00 4f 00 00 7c cb c9 00 00 ff 01 b9 7f 84 e3 3d 05 c0 21 9f 06 07 27 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 08 00 a2 56 2f 00 00 00 29 36 8c 41 00 03 86 2b 08 09 0a 0b 0c 0d 0e 0f 10 11 12 13 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23 24 25 26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33 34 35 36 37",
+                62
         );
 
         List<ITrame> expected = new ArrayList<>(Collections.singletonList(trame1));
 
-        List<ITrame> actual = fichierExtracteur.extraireTrames("test/file/data/trames.txt");
+        List<ITrame> actual = fichierExtracteur.extraireTrames("test/file/data/trames_old.txt");
+
+        System.out.println(expected);
 
         assertArrayEquals(expected.toArray(), actual.toArray());
     }

@@ -40,7 +40,8 @@ public class FichierSauvegardeurTest {
                 "TCP",
                 "443 → 37756 [ACK] Seq=1 Ack=518 Win=65535 Len=0",
                 entetes,
-                "08 00 27 48 75 d2 52 54 00 12 35 02 08 00 45 00 00 28 fd 63 00 00 40 06 ad f6 ac d9 16 8e 0a 00 02 0f 01 bb 93 7c 13 ca 68 02 ab bd dc e6 50 10 ff ff 46 b6 00 00 00 00 00 00 00 00"
+                "08 00 27 48 75 d2 52 54 00 12 35 02 08 00 45 00 00 28 fd 63 00 00 40 06 ad f6 ac d9 16 8e 0a 00 02 0f 01 bb 93 7c 13 ca 68 02 ab bd dc e6 50 10 ff ff 46 b6 00 00 00 00 00 00 00 00",
+                62
         );
         List<ITrame> trames = new ArrayList<>(Collections.singletonList(trameEthernet));
 

@@ -1,17 +1,18 @@
 package model.network.entete;
 
+import model.network.INetworkObject;
+import model.network.NetworkObject;
 import model.network.champ.IChamp;
-import model.network.champ.ListeChamps;
 
 import java.util.List;
 import java.util.Objects;
 
-public class Entete implements IEntete {
+public class Entete extends IEntete {
     private final String protocole;
     private final String description;
     private final List<IChamp> champs;
 
-  public Entete(String protocole, String description, List<IChamp> champs) {
+    public Entete(String protocole, String description, List<IChamp> champs) {
         this.protocole = protocole;
         this.description = description;
         this.champs = champs;
@@ -32,25 +33,49 @@ public class Entete implements IEntete {
         return champs;
     }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Entete entete = (Entete) o;
-    boolean champsEqual = true;
-    int i = 0;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Entete entete = (Entete) o;
+        boolean champsEqual = true;
+        int i = 0;
 
-    while (champsEqual && i < getChamps().size()) {
-      champsEqual = getChamps().get(i).equals(((Entete) o).getChamps());
-      i++;
+        while (champsEqual && i < getChamps().size()) {
+            champsEqual = getChamps().get(i).equals(((Entete) o).getChamps());
+            i++;
+        }
+
+        return getProtocole().equals(entete.getProtocole()) && getDescription().equals(entete.getDescription()) &&
+                champsEqual;
     }
 
-    return getProtocole().equals(entete.getProtocole()) && getDescription().equals(entete.getDescription()) &&
-           champsEqual;
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(getProtocole(), getDescription(), getChamps());
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(getProtocole(), getDescription(), getChamps());
-  }
+    @Override
+    public String toString() {
+        return "Entete{" +
+                "protocole='" + protocole + '\'' +
+                ", description='" + description + '\'' +
+                //", champs=" + champs.stream().map(champ -> "\t\t" + champ.getEtiquette() + " : " +champ.toString()).reduce("", (c1, c2) -> c1 + '\n' + c2) +
+                '}';
+    }
+
+    @Override
+    public List<? extends INetworkObject> getChildren() {
+        return champs;
+    }
+
+    @Override
+    public String getValue() {
+        return protocole;
+    }
+
+    @Override
+    public boolean isRoot() {
+        return true;
+    }
 }

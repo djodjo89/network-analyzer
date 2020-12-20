@@ -1,5 +1,8 @@
 package model.network.champ;
 
+import model.network.INetworkObject;
+
+import java.util.List;
 import java.util.Objects;
 
 public class Champ<T> extends AbstractChamp<T> {
@@ -19,24 +22,31 @@ public class Champ<T> extends AbstractChamp<T> {
         return valeur;
     }
 
-    public String toString() {
-        return etiquette + ": " + valeur;
+    @Override
+    public List<? extends INetworkObject> getChildren() {
+        return null;
     }
 
-    public int getHauteur() {
-        return 1;
+    @Override
+    public String getValue() {
+        return valeur.toString();
     }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Champ<?> champ = (Champ<?>) o;
-    return getEtiquette().equals(champ.getEtiquette()) && getValeur().equals(champ.getValeur());
-  }
+    @Override
+    public boolean isRoot() {
+        return false;
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(getEtiquette(), getValeur());
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Champ<?> champ = (Champ<?>) o;
+        return getEtiquette().equals(champ.getEtiquette()) && getValeur().equals(champ.getValeur());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getEtiquette(), getValeur());
+    }
 }

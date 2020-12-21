@@ -1,16 +1,15 @@
 package model.file.input;
 
-import javafx.util.Pair;
 import model.network.champ.Champ;
 import model.network.champ.IChamp;
 import model.network.champ.ListeChamps;
 import model.network.entete.Entete;
 import model.network.entete.IEntete;
+import model.network.entete.ethernet.Ethernet;
+import model.network.entete.icmp.Icmp;
+import model.network.entete.ip.IP;
 import model.network.trame.ITrame;
 import model.network.trame.Trame;
-import model.type.Hexa;
-import model.type.numeric.BinaireNumeric;
-import model.type.string.BinaireString;
 import model.type.string.HexadecimalString;
 
 import java.io.IOException;
@@ -18,202 +17,114 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class FichierExtracteur implements IFichierExtracteur {
 
-  private ITrame process(List<Pair<Integer, List<String>>> contenu) {
-    List<String> valeursTrame = new ArrayList<>();
-
-    for (Pair<Integer, List<String>> paire : contenu) {
-      valeursTrame.addAll(paire.getValue());
+    private static int optionsSize(List<String> valeurs) {
+        System.out.println(valeurs.get(35));
+        return new HexadecimalString(valeurs.get(35)).getNumericValue();
     }
 
-    Champ macSource = new Champ("Source",
-            IntStream.range(0, 5).mapToObj(index -> valeursTrame.get(index)).reduce((a, b) -> a + ":" + b).orElse(""));
-    Champ macDestination = new Champ("Destination",
-            IntStream.range(6, 11).mapToObj(index -> valeursTrame.get(index)).reduce((a,
-                                                                                      b) -> a + ":" + b).orElse(""));
-    Champ type = new Champ("Type", "0x" + new HexadecimalString(valeursTrame.get(12) + valeursTrame.get(13)));
+    private ITrame process(int no, List<String> valeursTrame) {
+        List<String> valeursEthernet = valeursTrame.subList(0, 14);
+        List<String> valeursIp = valeursTrame.subList(15, 35);
+        int ipOptionsSize = optionsSize(valeursTrame);
+        List<String> valeursIcmp = valeursTrame.subList(35 + ipOptionsSize, valeursTrame.size());
 
-    List<IChamp> champsEthernet = new ArrayList<>(Arrays.asList(macDestination, macSource, type));
+        Ethernet ethernet = new Ethernet(valeursEthernet);
+        IP ip = new IP(valeursIp, ipOptionsSize);
+        System.out.println(valeursIp);
+        System.out.println(ip.getIpProtocole());
+        System.out.println(ip.getProtocoleAbreviation());
+        Icmp icmp = new Icmp(valeursIcmp);
 
-    Entete ethernet = new Entete("Ethernet II", "Src: Oracle_" + macSource.toString().substring(macSource.toString().length() / 2) + " (" + macSource + "), Dst: Oracle_" + macDestination.toString().substring(macDestination.toString().length() / 2) + " (" + macDestination +")", champsEthernet);
+        Protocole protocole = Arrays
+                .stream(Protocole.values())
+                .filter(proto -> proto.getValue() == ip.getIpProtocole().getValeurDecimale())
+                .findAny()
+                .orElse(Protocole.ICMP);
 
-    String protocole =
-            Arrays.stream(Protocole.values()).filter(proto -> proto.getValue().equals(String.valueOf(valeursTrame.get(14).charAt(0)))).findFirst().orElse(Protocole.IPV4).getName();
-    Champ totalLength = new Champ("Total Length", new HexadecimalString(valeursTrame.get(16) + valeursTrame.get(17)).getNumericValue());
-    Champ identification = new Champ("Identification", "0x" + valeursTrame.get(18) + valeursTrame.get(19));
+        String description =
+                "id=" + icmp.getIdentifierBE().getValeur() +
+                "/" + icmp.getIdentifierLE().getValeur() +
+                ", seq=" + icmp.getSequenceNumberBE().getValeur() +
+                "/" + icmp.getSequenceNumberLE().getValeur() +
+                ", ttl=" + ip.getTtl().getValeur();
 
-    int firstFragmentDecimalValue = new HexadecimalString(valeursTrame.get(20)).getNumericValue();
-    String firstFragmentBinaryString = new BinaireNumeric(firstFragmentDecimalValue).toString();
-    int offset = 0;
-    switch (firstFragmentBinaryString.length()) {
-      case 6:
-        offset = 1; break;
-      case 7:
-        offset = 2; break;
-      case 8:
-        offset = 3; break;
-      default:
-        offset = 0;
+        List<IEntete> entetes = new ArrayList<>(Arrays.asList(
+                ethernet,
+                ip,
+                icmp
+        ));
+
+        return new Trame(
+                no,
+                ip.getSource().getValeur(),
+                ip.getDestination().getValeur(),
+                protocole.getAbreviation(),
+                description,
+                entetes,
+                icmp.getData().getValeur(),
+                valeursTrame.size()
+        );
     }
-    String flagsDisplay = "0x" + new HexadecimalString(
-            offset != 0
-                    ? firstFragmentBinaryString.substring(0, offset)
-                    : firstFragmentBinaryString
-    ).toString();
 
-    Champ flags = new Champ("Flags", flagsDisplay);
+    @Override
+    public List<ITrame> extraireTrames(String nomFichier) throws LigneMalFormatteeException {
+        List<ITrame> trames = new ArrayList<>();
 
-    String secondFragmentBinaryString = firstFragmentBinaryString.substring(offset);
-    BinaireString firstPart = new BinaireString(secondFragmentBinaryString);
-    BinaireString secondPart = new BinaireString(valeursTrame.get(21));
-    BinaireString fragmentOffsetString = new BinaireString(firstPart.toString() + secondPart.toString());
-    Champ fragmentOffset = new Champ("Fragment offset", fragmentOffsetString.getNumericValue());
-    Champ ttl = new Champ("Time to live", new HexadecimalString(valeursTrame.get(22)).getNumericValue());
-    Champ ipProtocole = new Champ("Protocole", new HexadecimalString(valeursTrame.get(23)).getNumericValue());
-    Champ headerChecksum = new Champ("Header cheksum", "0x" + valeursTrame.get(24) + valeursTrame.get(25));
-    Champ ipSource = new Champ("Source",
-            new HexadecimalString(valeursTrame.get(26)).getNumericValue() + "." +
-                    new HexadecimalString(valeursTrame.get(27)).getNumericValue() + "." +
-                    new HexadecimalString(valeursTrame.get(28)).getNumericValue() + "." +
-                    new HexadecimalString(valeursTrame.get(29)).getNumericValue()
-    );
-    Champ ipDestination = new Champ("Destination",
-            new HexadecimalString(valeursTrame.get(30)).getNumericValue() + "." +
-                    new HexadecimalString(valeursTrame.get(31)).getNumericValue() + "." +
-                    new HexadecimalString(valeursTrame.get(32)).getNumericValue() + "." +
-                    new HexadecimalString(valeursTrame.get(33)).getNumericValue()
-    );
+        try {
+            String rawContent = Files.readString(Paths.get(nomFichier)).replaceAll("(?m)^[ \t]*\r?\n", "");
+            List<String> lignes = Arrays.asList(rawContent.split("\n"));
+            int indiceTrame = 1;
+            int indiceLigne = 0;
 
-    ListeChamps options = new ListeChamps<>("Options", Arrays.asList(
-            new ListeChamps<>("Record Route", Arrays.asList(
-                    new Champ<>("Type", new HexadecimalString(valeursTrame.get(34))),
-                    new Champ<>("Length", new HexadecimalString(valeursTrame.get(35))),
-                    new Champ<>("Pointer", new HexadecimalString(valeursTrame.get(36)))
-            )),
-            new ListeChamps<>("End of Options List", Arrays.asList(
-                    new Champ<>("Type", 0)
-            ))
-    ));
+            while (indiceLigne < lignes.size()) {
+                boolean trameFinie = false;
+                List<String> valeursTrame = new ArrayList<>();
+                int previousOffset = 0;
+                int nextOffset = -1;
 
-    List<IChamp> ipv4Champs = Arrays.asList(
-            totalLength,
-            identification,
-            flags,
-            fragmentOffset,
-            ttl,
-            ipProtocole,
-            headerChecksum,
-            ipSource,
-            ipDestination,
-            options
-    );
+                while (!trameFinie && indiceLigne < lignes.size()) {
+                    try {
+                        nextOffset = new HexadecimalString(lignes.get(indiceLigne + 1).split("  ")[0]).getNumericValue();
+                        String[] valeursLignes = lignes.get(indiceLigne).split("  ")[1].split(" ");
 
-    Entete ipv4 = new Entete("Internet Protocol Version 4", "Src: " + ipSource.getValeur() + ", Dst: " + ipDestination.getValeur(), ipv4Champs);
+                        if (nextOffset - previousOffset > valeursLignes.length + valeursTrame.size())
+                            throw new LigneMalFormatteeException(indiceLigne);
 
-    Champ typeIcmp = new Champ("Type", new HexadecimalString(valeursTrame.get(74)).getNumericValue());
-    Champ code = new Champ("Code", new HexadecimalString(valeursTrame.get(75)).getNumericValue());
-    Champ checksum = new Champ("Checksum", "0x" + new HexadecimalString(valeursTrame.get(76) + valeursTrame.get(77)));
-    Champ identifierBE = new Champ("Identifier (BE)", "0x" + new HexadecimalString(valeursTrame.get(78) + "00"));
-    Champ identifierLE = new Champ("Identifier (LE)", "0x00" + new HexadecimalString(valeursTrame.get(79)));
-    Champ sequenceNumberBE = new Champ("Sequence number (BE)", "0x" + new HexadecimalString(valeursTrame.get(80) + "00"));
-    Champ sequenceNumberLE = new Champ("Sequence number (LE)", "0x00" + new HexadecimalString(valeursTrame.get(81)));
-    Champ data = new Champ("Data", new HexadecimalString("29368c410003862b08090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f3031323334353637"));
+                        for (int indiceValeur = 0; indiceValeur < nextOffset - previousOffset; indiceValeur++)
+                            valeursTrame.add(valeursLignes[indiceValeur]);
 
-    List<IChamp> icmpChamps = Arrays.asList(
-            typeIcmp,
-            code,
-            checksum,
-            identifierBE,
-            identifierLE,
-            sequenceNumberBE,
-            sequenceNumberLE,
-            data
-    );
+                        previousOffset = nextOffset;
 
-    Entete icmp = new Entete("Internet Control Message Protocol", "", icmpChamps);
+                        if (nextOffset == 0) {
+                            trameFinie = true;
+                            valeursTrame.addAll(Arrays.asList(valeursLignes));
+                        }
+                    } catch (LigneMalFormatteeException ligneMalFormatteeException) {
+                        throw ligneMalFormatteeException;
+                    } catch (Exception ignored) {
+                    }
 
-    List<IEntete> entetes = new ArrayList<>(Arrays.asList(
-            ethernet,
-            ipv4,
-            icmp
-    ));
+                    indiceLigne++;
+                }
 
-    return new Trame(
-            // A incrementer
-            1,
-            0.000000,
-            ipSource.toString(),
-            ipDestination.toString(),
-            "ICMP",
-            "Echo (ping) request  id=0x" + identifierBE.toString() + identifierLE.toString() + ", seq=" + sequenceNumberBE.toString() + "/" + sequenceNumberLE.toString() + ", ttl=" + ttl.toString() + " (no response found!)",
-            entetes,
-            "29 36 8c 41 00 03 86 2b 08 09 0a 0b 0c 0d 0e 0f 10 11 12 13 14 15 16 17 18 19 1a 1b 1c 1d 1e 1f 20 21 22 23 24 25 26 27 28 29 2a 2b 2c 2d 2e 2f 30 31 32 33 34 35 36 37",
-            62
-    );
-  }
+                try {
+                    trames.add(process(indiceTrame, valeursTrame));
+                } catch (Exception e) {
+                    throw e;
+                }
+                indiceTrame++;
+            }
 
-  @Override
-  public List<ITrame> extraireTrames(String nomFichier) {
-    try {
-      String rawContent = Files.readString(Paths.get(nomFichier));
-      List<String> lignes = Arrays.asList(rawContent.split("\n"));
+            return trames;
 
-      List<ITrame> trames = new ArrayList<>();
-      int indiceTrame = 0;
-      int indiceLigne = 0;
-      boolean arriveALaDerniereTrame = false;
-
-      while (!arriveALaDerniereTrame) {
-        List<Pair<Integer, List<String>>> contenu = new ArrayList<>();
-        boolean trameFinie = false;
-
-        while (!trameFinie) {
-          int offset = new HexadecimalString(lignes.get(indiceLigne).split("  ")[0]).getNumericValue();
-
-          if (offset == 0) {
-            trameFinie
-          }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        /*for (int j = indiceLigneDebut; j < indiceLigneFin; j++) {
-          String[] ligneSplittee = lignes.get(j).split("  ");
-          if (ligneSplittee.length != 2) throw new LigneIncompleteException(j + 1);
-          int previousOffset = contenu.size() != 0 ? contenu.get(contenu.size() - 1).getKey() : 0;
-          int previousLineLength = contenu.size() != 0 ? contenu.get(contenu.size() - 1).getValue().size() : 0;
-          int currentOffset = new HexadecimalString(ligneSplittee[0]).getNumericValue();
-          String[] rawLigneContenu = ligneSplittee[1].split(" ");
-
-          if (previousOffset == 0 || previousOffset + previousLineLength == currentOffset) {
-            String[] prochaineLigneSplittee = j < lignes.size() - 1 ? lignes.get(j + 1).split("  ") : new String[]{ "00"
-                    , "" };
-            int nextOffset = new HexadecimalString(prochaineLigneSplittee[0]).getNumericValue();
-            List<String> ligneContenu = new ArrayList<>();
-            if (nextOffset != 0) for (int indexHexa = 0; indexHexa < nextOffset - currentOffset; indexHexa++) {
-              if (rawLigneContenu[indexHexa].length() == 2) ligneContenu.add(rawLigneContenu[indexHexa]);
-              else throw new LigneIncompleteException(j);
-            }
-            else for (String value : rawLigneContenu) {
-              if (value.length() == 2) ligneContenu.add(value);
-              else throw new LigneIncompleteException(j);
-            } contenu.add(new Pair(currentOffset, ligneContenu));
-          }
-        }*/
-
-        trames.add(process(contenu));
-        indiceTrame++;
-      }
-
-      return trames;
-
-    } catch (IOException | LigneIncompleteException e) {
-      e.printStackTrace();
+        return trames;
     }
-
-    return null;
-  }
 }

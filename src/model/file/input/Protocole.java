@@ -1,21 +1,23 @@
 package model.file.input;
 
 public enum Protocole {
-    IPV4("Internet Protocol Version 4", "4");
+    ICMP("Internet Control Message Protocol", 1),
+    UDP("User Datagram Protocol", 17),
+    TCP("Transmission Control Protocol", 6);
 
     private String name;
-    private String value;
+    private int value;
 
-    Protocole(String name, String value) {
+    Protocole(String name, int value) {
         this.name = name;
         this.value = value;
     }
 
-    public String getName() {
-        return name;
+    public String getAbreviation() {
+        return name();
     }
 
-    public String getValue() {
+    public int getValue() {
         return value;
     }
 }

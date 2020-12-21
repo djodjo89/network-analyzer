@@ -7,10 +7,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         Controleur controleur = new Controleur(stage);
-
-        // Afficher les trames
-        // Les sauvegarder dans un fichier
-        System.out.println("Hello world!");
+        controleur.launch();
     }
 
     public static void main(String args[]) {

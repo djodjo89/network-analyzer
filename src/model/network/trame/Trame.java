@@ -9,7 +9,6 @@ import java.util.Objects;
 
 public class Trame extends ITrame {
     private final int no;
-    private final double temps;
     private final String source;
     private final String destination;
     private final String protocoleAbreviation;
@@ -18,9 +17,8 @@ public class Trame extends ITrame {
     private final String hexa;
     private final int length;
 
-    public Trame(int no, double temps, String source, String destination, String protocoleAbreviation, String info, List<IEntete> entetes, String hexa, int length) {
+    public Trame(int no, String source, String destination, String protocoleAbreviation, String info, List<IEntete> entetes, String hexa, int length) {
         this.no = no;
-        this.temps = temps;
         this.source = source;
         this.destination = destination;
         this.protocoleAbreviation = protocoleAbreviation;
@@ -33,11 +31,6 @@ public class Trame extends ITrame {
     @Override
     public int getNo() {
         return no;
-    }
-
-    @Override
-    public double getTemps() {
-        return temps;
     }
 
     @Override
@@ -87,28 +80,18 @@ public class Trame extends ITrame {
             entetesEqual = getEntetes().get(i).equals(((Trame) o).getEntetes());
             i++;
         }
-        return getNo() == trame.getNo() && Double.compare(trame.getTemps(), getTemps()) == 0 && getSource().equals(trame.getSource()) && getDestination().equals(trame.getDestination()) && getProtocoleAbreviation().equals(trame.getProtocoleAbreviation()) && getInfo().equals(trame.getInfo()) &&
+        return getNo() == trame.getNo() && getSource().equals(trame.getSource()) && getDestination().equals(trame.getDestination()) && getProtocoleAbreviation().equals(trame.getProtocoleAbreviation()) && getInfo().equals(trame.getInfo()) &&
                 entetesEqual && getHexa().equals(trame.getHexa());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getNo(), getTemps(), getSource(), getDestination(), getProtocoleAbreviation(), getInfo(), getEntetes(), getHexa());
+        return Objects.hash(getNo(), getSource(), getDestination(), getProtocoleAbreviation(), getInfo(), getEntetes(), getHexa());
     }
 
     @Override
     public String toString() {
-        return "Trame{" +
-                "no=" + no +
-                ", temps=" + temps +
-                ", source='" + source + '\'' +
-                ", destination='" + destination + '\'' +
-                ", protocoleAbreviation='" + protocoleAbreviation + '\'' +
-                ", info='" + info + '\'' +
-                //", entetes=" + entetes.stream().map(entete -> '\t' + entete.toString()).reduce("", (e1, e2) -> e1 + '\n' + e2) +
-                ", hexa='" + hexa + '\'' +
-                ", length=" + length +
-                '}';
+        return "Trame " + no + ": " + length + " octets";
     }
 
     @Override
@@ -117,7 +100,7 @@ public class Trame extends ITrame {
     }
 
     @Override
-    public String getValue() {
+    public String getValeur() {
         return String.valueOf(no);
     }
 

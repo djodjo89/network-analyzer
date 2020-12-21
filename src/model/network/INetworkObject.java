@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface INetworkObject  {
     List<? extends INetworkObject> getChildren();
-    String getValue();
+    String getValeur();
     boolean isRoot();
 }

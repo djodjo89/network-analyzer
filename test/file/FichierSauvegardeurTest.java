@@ -34,7 +34,6 @@ public class FichierSauvegardeurTest {
 
         ITrame trameEthernet = new Trame(
                 1,
-                1.02569,
                 "192.168.0.1",
                 "192.168.0.2",
                 "TCP",
@@ -45,7 +44,7 @@ public class FichierSauvegardeurTest {
         );
         List<ITrame> trames = new ArrayList<>(Collections.singletonList(trameEthernet));
 
-        fichierSauvegardeur.sauvegarder(trames);
+        fichierSauvegardeur.sauvegarder("test/file/data/trames.json", trames);
 
          try {
              String expected = Files.readString(Paths.get("test/file/data/trames.json"));

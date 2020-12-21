@@ -6,5 +6,5 @@ import java.util.List;
 
 
 public interface IFichierSauvegardeur {
-    void sauvegarder(List<ITrame> trames);
+    void sauvegarder(String path, List<ITrame> trames);
 }

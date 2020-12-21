@@ -4,7 +4,7 @@ import model.network.INetworkObject;
 
 import java.util.List;
 
-public abstract class AbstractChamp<T> extends IChamp<T> {
+public abstract class AbstractChamp extends IChamp {
     private boolean isRoot = true;
 
     public boolean isRoot() {
@@ -16,10 +16,8 @@ public abstract class AbstractChamp<T> extends IChamp<T> {
     }
 
     public abstract String getEtiquette();
-    public abstract T getValeur();
-    public String toString() {
-        return getEtiquette() + " : " + getValeur();
-    }
+
+    public abstract String getValeur();
+    public abstract String toString();
     public abstract List<? extends INetworkObject> getChildren();
-    public abstract String getValue();
 }

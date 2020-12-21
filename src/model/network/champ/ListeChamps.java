@@ -6,16 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ListeChamps<T> extends AbstractChamp<List<IChamp<T>>> {
+public class ListeChamps extends AbstractChamp {
     private String etiquette;
-    private List<IChamp<T>> sousChamps;
+    private List<IChamp> sousChamps;
 
     public ListeChamps(String etiquette) {
         this.etiquette = etiquette;
         this.sousChamps = new ArrayList<>();
     }
 
-    public ListeChamps(String etiquette, List<IChamp<T>> sousChamps) {
+    public ListeChamps(String etiquette, List<IChamp> sousChamps) {
         this.etiquette = etiquette;
         this.sousChamps = sousChamps;
     }
@@ -24,11 +24,11 @@ public class ListeChamps<T> extends AbstractChamp<List<IChamp<T>>> {
         return etiquette;
     }
 
-    public List<IChamp<T>> getValeur() {
-        return sousChamps;
+    public String getValeur() {
+        return sousChamps.toString();
     }
 
-    public boolean addChamp(IChamp<T> champ) {
+    public boolean addChamp(IChamp champ) {
         boolean res = sousChamps.add(champ);
         champ.setNotRoot();
         return res;
@@ -40,20 +40,15 @@ public class ListeChamps<T> extends AbstractChamp<List<IChamp<T>>> {
     }
 
     @Override
-    public String getValue() {
-        return etiquette;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ListeChamps<T> that = (ListeChamps<T>) o;
+        ListeChamps that = (ListeChamps) o;
         boolean sousChampsEqual = true;
         int i = 0;
 
         while (sousChampsEqual && i < sousChamps.size()) {
-            sousChampsEqual = sousChamps.get(i).equals(((ListeChamps<T>) o).sousChamps);
+            sousChampsEqual = sousChamps.get(i).equals(((ListeChamps) o).sousChamps);
             i++;
         }
 
@@ -65,10 +60,8 @@ public class ListeChamps<T> extends AbstractChamp<List<IChamp<T>>> {
         return Objects.hash(getEtiquette(), sousChamps);
     }
 
-    /*@Override
-    public String toString() {return sousChamps
-                .stream()
-                .map(ssC -> "\t\t" + ssC.getEtiquette() + " : " + ssC.toString())
-                .reduce("", (c1, c2) -> c1 + '\n' + c2);
-    }*/
+    @Override
+    public String toString() {
+        return getEtiquette();
+    }
 }

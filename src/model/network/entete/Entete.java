@@ -24,6 +24,11 @@ public class Entete extends IEntete {
     }
 
     @Override
+    public String getProtocoleAbreviation() {
+        return protocole;
+    }
+
+    @Override
     public String getDescription() {
         return description;
     }
@@ -57,11 +62,7 @@ public class Entete extends IEntete {
 
     @Override
     public String toString() {
-        return "Entete{" +
-                "protocole='" + protocole + '\'' +
-                ", description='" + description + '\'' +
-                //", champs=" + champs.stream().map(champ -> "\t\t" + champ.getEtiquette() + " : " +champ.toString()).reduce("", (c1, c2) -> c1 + '\n' + c2) +
-                '}';
+        return protocole + (!description.equals("") ? ", " + description : "");
     }
 
     @Override
@@ -70,7 +71,7 @@ public class Entete extends IEntete {
     }
 
     @Override
-    public String getValue() {
+    public String getValeur() {
         return protocole;
     }
 

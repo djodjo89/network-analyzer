@@ -1,30 +1,25 @@
 package file;
 
 import model.file.input.FichierExtracteur;
-import model.file.output.FichierSauvegardeur;
+import model.file.input.LigneMalFormatteeException;
 import model.network.champ.Champ;
 import model.network.champ.IChamp;
-import model.network.champ.ListeChamps;
 import model.network.entete.Entete;
 import model.network.entete.IEntete;
 import model.network.trame.ITrame;
 import model.network.trame.Trame;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 
 public class FichierExtracteurTest {
     @Test
-    public void testExtraction() {
+    public void testExtraction() throws LigneMalFormatteeException {
         FichierExtracteur fichierExtracteur = new FichierExtracteur();
 
         Champ macDestination = new Champ("Destination", "08:00:20:0a:ac:96");
@@ -114,7 +109,6 @@ public class FichierExtracteurTest {
 
         ITrame trame1 = new Trame(
                 1,
-                0.000000,
                 "132.227.61.5",
                 "192.33.159.6",
                 "ICMP",

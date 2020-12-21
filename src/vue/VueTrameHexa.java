@@ -1,4 +1,4 @@
-package vue.trame;
+package vue;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ import javafx.scene.control.TreeItem;
 import model.network.INetworkObject;
 import model.network.trame.ITrame;
 
-public class VueNetworkObject extends TreeItem<INetworkObject> implements VueTrame {
-    public VueNetworkObject(INetworkObject object) {
+public class VueTrameHexa extends TreeItem<INetworkObject> {
+    public VueTrameHexa(INetworkObject object) {
         super(object);
     }
 
@@ -38,15 +38,13 @@ public class VueNetworkObject extends TreeItem<INetworkObject> implements VueTra
     private ObservableList<TreeItem<INetworkObject>> buildChildren(TreeItem<INetworkObject> TreeItem) {
         INetworkObject c = TreeItem.getValue();
         if (c != null && c.isRoot()) {
-            System.out.println(c.getValue());
-            System.out.println(c.getChildren());
             List<INetworkObject> objects = (List<INetworkObject>) c.getChildren();
             if (objects != null) {
                 ObservableList<TreeItem<INetworkObject>> children = FXCollections
                         .observableArrayList();
 
                 for (INetworkObject childChamp : objects) {
-                    children.add(new VueNetworkObject(childChamp));
+                    children.add(new VueTrameHexa(childChamp));
                 }
 
                 return children;
@@ -54,11 +52,6 @@ public class VueNetworkObject extends TreeItem<INetworkObject> implements VueTra
         }
 
         return FXCollections.emptyObservableList();
-    }
-
-    @Override
-    public ITrame getTrame() {
-        return null;
     }
 
     private boolean isFirstTimeChildren = true;

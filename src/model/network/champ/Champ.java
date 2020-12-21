@@ -5,7 +5,7 @@ import model.network.INetworkObject;
 import java.util.List;
 import java.util.Objects;
 
-public class Champ<T> extends AbstractChamp<T> {
+public class Champ<T> extends AbstractChamp {
     private final String etiquette;
     private final T valeur;
 
@@ -18,18 +18,17 @@ public class Champ<T> extends AbstractChamp<T> {
         return etiquette;
     }
 
-    public T getValeur() {
+    public String getValeur() {
+        return valeur.toString();
+    }
+
+    public T getValeurDecimale() {
         return valeur;
     }
 
     @Override
     public List<? extends INetworkObject> getChildren() {
         return null;
-    }
-
-    @Override
-    public String getValue() {
-        return valeur.toString();
     }
 
     @Override
@@ -48,5 +47,9 @@ public class Champ<T> extends AbstractChamp<T> {
     @Override
     public int hashCode() {
         return Objects.hash(getEtiquette(), getValeur());
+    }
+
+    public String toString() {
+        return getEtiquette() + " : " + getValeur();
     }
 }

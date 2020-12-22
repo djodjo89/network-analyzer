@@ -1,16 +1,5 @@
-import controleur.Controleur;
-import javafx.application.Application;
-import javafx.stage.Stage;
-
-public class Main extends Application {
-
-    @Override
-    public void start(Stage stage) {
-        Controleur controleur = new Controleur(stage);
-        controleur.launch();
-    }
-
-    public static void main(String args[]) {
-        launch(args);
+public class Main {
+    public static void main(String[] args) {
+        Launcher.main(args);
     }
 }

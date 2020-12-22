@@ -7,10 +7,9 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 
 import model.network.INetworkObject;
-import model.network.trame.ITrame;
 
-public class VueTrameHexa extends TreeItem<INetworkObject> {
-    public VueTrameHexa(INetworkObject object) {
+public class VueTrameEntetes extends TreeItem<INetworkObject> {
+    public VueTrameEntetes(INetworkObject object) {
         super(object);
     }
 
@@ -44,7 +43,7 @@ public class VueTrameHexa extends TreeItem<INetworkObject> {
                         .observableArrayList();
 
                 for (INetworkObject childChamp : objects) {
-                    children.add(new VueTrameHexa(childChamp));
+                    children.add(new VueTrameEntetes(childChamp));
                 }
 
                 return children;

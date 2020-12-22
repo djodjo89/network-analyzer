@@ -52,7 +52,7 @@ public class VueTramesTable extends TableView<ITrame> {
                             if (newSelection != null) {
                                 current = newSelection;
                                 container.getChildren().remove(container.getChildren().size() - 1);
-                                container.getChildren().add(new TreeView<>(new VueTrameHexa(current)));
+                                container.getChildren().add(new TreeView<>(new VueTrameEntetes(current)));
                             }
                         });
     }

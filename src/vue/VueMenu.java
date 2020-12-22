@@ -64,6 +64,7 @@ public class VueMenu extends MenuBar {
         Menu fileMenu = new Menu("Fichier");
         MenuItem open = new MenuItem("Ouvrir");
         MenuItem save = new MenuItem("Sauvegarder");
+        MenuItem close = new MenuItem("Fermer");
 
         save.setOnAction(e -> {
             fileChooser.setTitle("Sauvegarder un fichier");
@@ -86,15 +87,20 @@ public class VueMenu extends MenuBar {
                     current = trames.get(0);
 
                     entetesTrameContainer.getChildren().remove(entetesTrameContainer.getChildren().size() - 1);
-                    entetesTrameContainer.getChildren().add(new TreeView<>(new VueTrameHexa(current)));
+                    entetesTrameContainer.getChildren().add(new TreeView<>(new VueTrameEntetes(current)));
                 } catch (LigneMalFormatteeException ligneMalFormatteeException) {
                     showErrorPopup(ligneMalFormatteeException);
                 }
             }
         });
 
+        close.setOnAction(e -> {
+            stage.close();
+        });
+
         fileMenu.getItems().add(open);
         fileMenu.getItems().add(save);
+        fileMenu.getItems().add(close);
         getMenus().add(fileMenu);
     }
 }

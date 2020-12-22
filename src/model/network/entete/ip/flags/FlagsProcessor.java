@@ -6,12 +6,18 @@ import model.type.string.HexadecimalString;
 public class FlagsProcessor {
     static String firstFragmentBinaryString(String valeurBrute) {
         int firstFragmentDecimalValue = new HexadecimalString(valeurBrute).getNumericValue();
-        return new BinaireNumeric(firstFragmentDecimalValue).toString();
+        String res = new BinaireNumeric(firstFragmentDecimalValue).toString();
+        int i = 0;
+        while (i < 13 && res.length() < 13) {
+            res = "0" + res;
+            i++;
+        }
+        return res;
     }
 
     static int offset(String valeurBrute) {
         int offset = 0;
-        switch (FlagsProcessor.firstFragmentBinaryString(valeurBrute).length()) {
+        switch (firstFragmentBinaryString(valeurBrute).length()) {
             case 6:
                 offset = 1;
                 break;

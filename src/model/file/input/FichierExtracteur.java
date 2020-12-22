@@ -1,9 +1,5 @@
 package model.file.input;
 
-import model.network.champ.Champ;
-import model.network.champ.IChamp;
-import model.network.champ.ListeChamps;
-import model.network.entete.Entete;
 import model.network.entete.IEntete;
 import model.network.entete.ethernet.Ethernet;
 import model.network.entete.icmp.Icmp;
@@ -22,21 +18,17 @@ import java.util.List;
 public class FichierExtracteur implements IFichierExtracteur {
 
     private static int optionsSize(List<String> valeurs) {
-        System.out.println(valeurs.get(35));
         return new HexadecimalString(valeurs.get(35)).getNumericValue();
     }
 
     private ITrame process(int no, List<String> valeursTrame) {
         List<String> valeursEthernet = valeursTrame.subList(0, 14);
-        List<String> valeursIp = valeursTrame.subList(15, 35);
+        List<String> valeursIp = valeursTrame.subList(15, 37);
         int ipOptionsSize = optionsSize(valeursTrame);
         List<String> valeursIcmp = valeursTrame.subList(35 + ipOptionsSize, valeursTrame.size());
 
         Ethernet ethernet = new Ethernet(valeursEthernet);
         IP ip = new IP(valeursIp, ipOptionsSize);
-        System.out.println(valeursIp);
-        System.out.println(ip.getIpProtocole());
-        System.out.println(ip.getProtocoleAbreviation());
         Icmp icmp = new Icmp(valeursIcmp);
 
         Protocole protocole = Arrays
@@ -94,8 +86,7 @@ public class FichierExtracteur implements IFichierExtracteur {
                         if (nextOffset - previousOffset > valeursLignes.length + valeursTrame.size())
                             throw new LigneMalFormatteeException(indiceLigne);
 
-                        for (int indiceValeur = 0; indiceValeur < nextOffset - previousOffset; indiceValeur++)
-                            valeursTrame.add(valeursLignes[indiceValeur]);
+                        valeursTrame.addAll(Arrays.asList(valeursLignes).subList(0, nextOffset - previousOffset));
 
                         previousOffset = nextOffset;
 

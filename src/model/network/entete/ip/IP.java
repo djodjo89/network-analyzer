@@ -29,19 +29,19 @@ public class IP extends Entete {
                         new TotalLength(valeurs.get(2) + valeurs.get(3)),
                         new Identification(valeurs.get(4) + valeurs.get(5)),
                         new Flags(valeurs.get(6)),
-                        new FragmentOffset(valeurs.get(6) + valeurs.get(7)),
-                        new TimeToLive(valeurs.get(8)),
-                        new Protocole(valeurs.get(9)),
-                        new HeaderChecksum(valeurs.get(10) + valeurs.get(11)),
-                        new AdresseIpSource(valeurs.subList(12, 15)),
-                        new AdresseIpDestination(valeurs.subList(16, 19)),
+                        new FragmentOffset(valeurs.get(6)),
+                        new TimeToLive(valeurs.get(7)),
+                        new Protocole(valeurs.get(8)),
+                        new HeaderChecksum(valeurs.get(11) + valeurs.get(12)),
+                        new AdresseIpSource(valeurs.subList(13, 14)),
+                        new AdresseIpDestination(valeurs.subList(15, 18)),
                         new ListeChamps("Options",
                                 optionsSize > 0
                                         ? Arrays.asList(
                                         new ListeChamps("Record Route", Arrays.asList(
-                                                new Champ<>("Type", new HexadecimalString(valeurs.get(20)).getNumericValue()),
-                                                new Champ<>("Length", new HexadecimalString(valeurs.get(21)).getNumericValue()),
-                                                new Champ<>("Pointer", new HexadecimalString(valeurs.get(22)).getNumericValue())
+                                                new Champ<>("Type", new HexadecimalString(valeurs.get(19)).getNumericValue()),
+                                                new Champ<>("Length", new HexadecimalString(valeurs.get(20)).getNumericValue()),
+                                                new Champ<>("Pointer", new HexadecimalString(valeurs.get(21)).getNumericValue())
                                         )),
                                         new ListeChamps("End of Options List", Collections.singletonList(
                                                 new Champ<>("Type", 0)
